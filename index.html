@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparador de Precios - Supermercados Chile</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #333; }
+        .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
+        input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
+        button { padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; }
+        .product-card { border: 1px solid #eee; padding: 15px; border-radius: 6px; background: #fff; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-name { font-weight: bold; margin-bottom: 10px; color: #555; }
+        .price-list { list-style: none; padding: 0; margin: 0; }
+        .price-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #eee; font-size: 14px; }
+        .cheapest { color: #28a745; font-weight: bold; }
+        .supermarket-name { font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🇨🇱 Comparador de Precios Local</h1>
+    
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Busca productos (ej: leche, arroz, aceite)..." onkeyup="filterProducts()">
+    </div>
+
+    <div class="products-grid" id="productsContainer">
+        <!-- Los productos se cargarán aquí dinámicamente -->
+    </div>
+</div>
+
+<script>
+const API_URL = 'http://localhost:3000/api/productos/real';
+let debounceTimer;
+
+async function loadProducts(query = '') {
+    try {
+        // Envia el texto de búsqueda al backend como parámetro ?q=
+        const response = await fetch(`${API_URL}?q=${encodeURIComponent(query)}`);
+        const products = await response.json();
+        renderGrid(products);
+    } catch (error) {
+        console.error("Error conectando al backend:", error);
+        document.getElementById('productsContainer').innerHTML = 
+            '<p style="text-align:center; color:red; grid-column: 1/-1;">Error de conexión con el servidor.</p>';
+    }
+}
+
+function renderGrid(products) {
+    const container = document.getElementById('productsContainer');
+    container.innerHTML = '';
+
+    if (products.length === 0) {
+        container.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">No se encontraron productos reales.</p>';
+        return;
+    }
+
+    products.forEach(product => {
+        const priceEntries = Object.entries(product.prices);
+        // Filtramos precios mayores a 0 para buscar el mínimo real
+        const validPrices = priceEntries.map(([_, p]) => p).filter(p => p > 0);
+        const minPrice = validPrices.length > 0 ? Math.min(...validPrices) : 0;
+
+        let priceRows = '';
+        priceEntries.forEach(([supermarket, price]) => {
+            const isCheapest = (price === minPrice && price > 0) ? 'cheapest' : '';
+            const precioTexto = price > 0 ? `$${price.toLocaleString('es-CL')}` : '---';
+            
+            priceRows += `
+                <li class="price-item ${isCheapest}">
+                    <span class="supermarket-name">${supermarket}</span>
+                    <span>${precioTexto}</span>
+                </li>
+            `;
+        });
+
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+            <div class="product-name">${product.name}</div>
+            <ul class="price-list">${priceRows}</ul>
+        `;
+        container.appendChild(card);
+    });
+}
+
+// Esta función se ejecuta cada vez que el usuario escribe en el input
+function filterProducts() {
+    const query = document.getElementById('searchInput').value;
+    
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+        loadProducts(query); // Llama al backend con el nuevo texto
+    }, 300);
+}
+
+// Carga inicial (mostrará el mensaje de ejemplo que estás viendo)
+loadProducts();
+</script>
+
+</body>
+</html>
