@@ -3,105 +3,708 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comparador de Precios - Supermercados Chile</title>
+    <title>Comparador Jumbo vs Lider</title>
+
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        h1 { text-align: center; color: #333; }
-        .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
-        input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
-        button { padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        button:hover { background-color: #0056b3; }
-        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; }
-        .product-card { border: 1px solid #eee; padding: 15px; border-radius: 6px; background: #fff; display: flex; flex-direction: column; justify-content: space-between; }
-        .product-name { font-weight: bold; margin-bottom: 10px; color: #555; }
-        .price-list { list-style: none; padding: 0; margin: 0; }
-        .price-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #eee; font-size: 14px; }
-        .cheapest { color: #28a745; font-weight: bold; }
-        .supermarket-name { font-weight: bold; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1250px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .notice {
+            background: #fff8e1;
+            border: 1px solid #ffe082;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #6d5200;
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 180px 130px;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input,
+        select,
+        button {
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        input,
+        select {
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 20px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 16px;
+        }
+
+        .product-card {
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 14px;
+            background: white;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 140px;
+            object-fit: contain;
+            background: #fafafa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .product-name {
+            font-weight: bold;
+            font-size: 14px;
+            min-height: 50px;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .product-store {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .price {
+            font-size: 22px;
+            color: #28a745;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .product-link {
+            color: #0069d9;
+            text-decoration: none;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        .product-link:hover {
+            text-decoration: underline;
+        }
+
+        .add-button {
+            margin-top: auto;
+            background: #28a745;
+        }
+
+        .add-button:hover {
+            background: #1f7e34;
+        }
+
+        .cart-panel {
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 15px;
+            position: sticky;
+            top: 20px;
+        }
+
+        .cart-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .cart-tab {
+            background: #e9ecef;
+            color: #333;
+            font-size: 13px;
+        }
+
+        .cart-tab.active {
+            background: #007bff;
+            color: white;
+        }
+
+        .cart-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 360px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+
+        .cart-item {
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .cart-item-name {
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .cart-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .qty {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .qty button {
+            padding: 4px 8px;
+            background: #6c757d;
+            font-size: 12px;
+        }
+
+        .remove {
+            background: #dc3545;
+            padding: 5px 8px;
+            font-size: 12px;
+        }
+
+        .remove:hover,
+        .clear:hover {
+            background: #b02a37;
+        }
+
+        .summary {
+            border-top: 1px solid #ddd;
+            padding-top: 12px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            margin: 6px 0;
+        }
+
+        .total {
+            font-size: 18px;
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        .compare {
+            margin-top: 14px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .compare h3 {
+            margin-top: 0;
+        }
+
+        .cheapest {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .clear {
+            width: 100%;
+            margin-top: 12px;
+            background: #dc3545;
+        }
+
+        .message {
+            text-align: center;
+            grid-column: 1 / -1;
+            color: #666;
+            padding: 20px;
+        }
+
+        .error {
+            color: red;
+        }
+
+        @media (max-width: 950px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .cart-panel {
+                position: static;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
+
 <body>
 
 <div class="container">
-    <h1>🇨🇱 Comparador de Precios Local</h1>
-    
-    <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Busca productos (ej: leche, arroz, aceite)..." onkeyup="filterProducts()">
+    <h1>🛒 Comparador Jumbo vs Lider</h1>
+    <p class="subtitle">Busca productos, elige supermercado y arma carritos separados.</p>
+
+    <div class="notice">
+        Los productos se cargan desde el backend productivo. Cada carrito se guarda en memoria del navegador usando localStorage.
     </div>
 
-    <div class="products-grid" id="productsContainer">
-        <!-- Los productos se cargarán aquí dinámicamente -->
+    <div class="controls">
+        <input
+            id="searchInput"
+            type="text"
+            placeholder="Busca arroz, leche, aceite..."
+            onkeyup="filterProducts()"
+        >
+
+        <select id="storeSelect" onchange="changeStore()">
+            <option value="Lider Real">Lider</option>
+            <option value="Jumbo Real">Jumbo</option>
+        </select>
+
+        <button onclick="buscarAhora()">Buscar</button>
+    </div>
+
+    <div class="layout">
+        <div class="products-grid" id="productsContainer"></div>
+
+        <aside class="cart-panel">
+            <h2>Carritos</h2>
+
+            <div class="cart-tabs">
+                <button id="tab-Lider" class="cart-tab active" onclick="showCart('Lider Real')">Lider</button>
+                <button id="tab-Jumbo" class="cart-tab" onclick="showCart('Jumbo Real')">Jumbo</button>
+            </div>
+
+            <div id="cartList" class="cart-list"></div>
+
+            <div class="summary">
+                <div class="row">
+                    <span>Productos:</span>
+                    <span id="cartCount">0</span>
+                </div>
+
+                <div class="row total">
+                    <span>Total:</span>
+                    <span id="cartTotal">$0</span>
+                </div>
+            </div>
+
+            <div class="compare">
+                <h3>Comparación</h3>
+
+                <div class="row">
+                    <span>Lider:</span>
+                    <span id="total-Lider">$0</span>
+                </div>
+
+                <div class="row">
+                    <span>Jumbo:</span>
+                    <span id="total-Jumbo">$0</span>
+                </div>
+
+                <div class="row">
+                    <span>Más barato:</span>
+                    <span id="cheapestStore" class="cheapest">---</span>
+                </div>
+            </div>
+
+            <button class="clear" onclick="clearCurrentCart()">Vaciar carrito actual</button>
+        </aside>
     </div>
 </div>
 
 <script>
 const API_URL = 'https://super-compara-poc-production.up.railway.app/api/productos/real';
+
 let debounceTimer;
+let currentProducts = [];
+let selectedStore = 'Lider Real';
+let activeCartStore = 'Lider Real';
+
+let carts = {
+    "Lider Real": [],
+    "Jumbo Real": []
+};
+
+loadCarts();
+renderCart();
+loadProducts();
 
 async function loadProducts(query = '') {
+    const container = document.getElementById('productsContainer');
+
     try {
-        // Envia el texto de búsqueda al backend como parámetro ?q=
+        container.innerHTML = '<p class="message">Cargando productos...</p>';
+
         const response = await fetch(`${API_URL}?q=${encodeURIComponent(query)}`);
         const products = await response.json();
-        renderGrid(products);
+
+        if (!response.ok) {
+            container.innerHTML = `
+                <p class="message error">
+                    ${escapeHtml(products.error || 'Error al obtener productos.')}
+                    <br>
+                    <small>${escapeHtml(products.detail || '')}</small>
+                </p>
+            `;
+            return;
+        }
+
+        currentProducts = Array.isArray(products) ? products : [];
+        renderProducts();
+
     } catch (error) {
-        console.error("Error conectando al backend:", error);
-        document.getElementById('productsContainer').innerHTML = 
-            '<p style="text-align:center; color:red; grid-column: 1/-1;">Error de conexión con el servidor.</p>';
+        console.error(error);
+
+        container.innerHTML = `
+            <p class="message error">
+                Error de conexión con el backend.
+            </p>
+        `;
     }
 }
 
-function renderGrid(products) {
+function renderProducts() {
     const container = document.getElementById('productsContainer');
     container.innerHTML = '';
 
-    if (products.length === 0) {
-        container.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">No se encontraron productos reales.</p>';
+    const filtered = currentProducts.filter(product => {
+        const price = Number(product.prices && product.prices[selectedStore]);
+        return price > 0;
+    });
+
+    if (filtered.length === 0) {
+        container.innerHTML = `
+            <p class="message">
+                No hay productos con precio para ${storeShort(selectedStore)}.
+            </p>
+        `;
         return;
     }
 
-    products.forEach(product => {
-        const priceEntries = Object.entries(product.prices);
-        // Filtramos precios mayores a 0 para buscar el mínimo real
-        const validPrices = priceEntries.map(([_, p]) => p).filter(p => p > 0);
-        const minPrice = validPrices.length > 0 ? Math.min(...validPrices) : 0;
+    filtered.forEach(product => {
+        const price = Number(product.prices[selectedStore]);
+        const link = product.links && product.links[selectedStore];
 
-        let priceRows = '';
-        priceEntries.forEach(([supermarket, price]) => {
-            const isCheapest = (price === minPrice && price > 0) ? 'cheapest' : '';
-            const precioTexto = price > 0 ? `$${price.toLocaleString('es-CL')}` : '---';
-            
-            priceRows += `
-                <li class="price-item ${isCheapest}">
-                    <span class="supermarket-name">${supermarket}</span>
-                    <span>${precioTexto}</span>
-                </li>
-            `;
-        });
+        const imageHtml = product.image
+            ? `<img class="product-image" src="${escapeAttribute(product.image)}" alt="${escapeAttribute(product.name)}">`
+            : `<div class="product-image"></div>`;
+
+        const linkHtml = link
+            ? `<a class="product-link" href="${escapeAttribute(link)}" target="_blank" rel="noopener noreferrer">Ver producto</a>`
+            : '';
 
         const card = document.createElement('div');
         card.className = 'product-card';
+
+        const safeId = escapeAttribute(product.id);
+
         card.innerHTML = `
-            <div class="product-name">${product.name}</div>
-            <ul class="price-list">${priceRows}</ul>
+            ${imageHtml}
+            <div class="product-name">${escapeHtml(product.name)}</div>
+            <div class="product-store">${escapeHtml(storeShort(selectedStore))}</div>
+            <div class="price">$${price.toLocaleString('es-CL')}</div>
+            ${linkHtml}
+            <button class="add-button" data-id="${safeId}">
+                Agregar al carrito
+            </button>
         `;
+
+        card.querySelector('.add-button').addEventListener('click', () => {
+            addToCart(product.id);
+        });
+
         container.appendChild(card);
     });
 }
 
-// Esta función se ejecuta cada vez que el usuario escribe en el input
-function filterProducts() {
-    const query = document.getElementById('searchInput').value;
-    
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => {
-        loadProducts(query); // Llama al backend con el nuevo texto
-    }, 300);
+function addToCart(productId) {
+    const product = currentProducts.find(item => String(item.id) === String(productId));
+
+    if (!product) return;
+
+    const price = Number(product.prices && product.prices[selectedStore]);
+
+    if (!price || price <= 0) {
+        alert('Producto sin precio válido para este supermercado.');
+        return;
+    }
+
+    const existing = carts[selectedStore].find(item => String(item.id) === String(product.id));
+
+    if (existing) {
+        existing.quantity += 1;
+    } else {
+        carts[selectedStore].push({
+            id: product.id,
+            name: product.name,
+            price,
+            quantity: 1,
+            store: selectedStore,
+            image: product.image || '',
+            url: product.links ? product.links[selectedStore] || '' : ''
+        });
+    }
+
+    activeCartStore = selectedStore;
+    saveCarts();
+    renderCart();
 }
 
-// Carga inicial (mostrará el mensaje de ejemplo que estás viendo)
-loadProducts();
+function renderCart() {
+    const list = document.getElementById('cartList');
+    const cart = carts[activeCartStore] || [];
+
+    list.innerHTML = '';
+
+    if (cart.length === 0) {
+        list.innerHTML = `<p class="message">Carrito de ${storeShort(activeCartStore)} vacío.</p>`;
+    } else {
+        cart.forEach(item => {
+            const subtotal = item.price * item.quantity;
+
+            const div = document.createElement('div');
+            div.className = 'cart-item';
+
+            div.innerHTML = `
+                <div class="cart-item-name">${escapeHtml(item.name)}</div>
+
+                <div class="cart-bottom">
+                    <div>
+                        <strong>$${item.price.toLocaleString('es-CL')}</strong>
+                        <br>
+                        <small>Subtotal: $${subtotal.toLocaleString('es-CL')}</small>
+                    </div>
+
+                    <div class="qty">
+                        <button class="qty-minus">-</button>
+                        <span>${item.quantity}</span>
+                        <button class="qty-plus">+</button>
+                    </div>
+
+                    <button class="remove">X</button>
+                </div>
+            `;
+
+            div.querySelector('.qty-minus').addEventListener('click', () => {
+                changeQuantity(item.id, -1);
+            });
+
+            div.querySelector('.qty-plus').addEventListener('click', () => {
+                changeQuantity(item.id, 1);
+            });
+
+            div.querySelector('.remove').addEventListener('click', () => {
+                removeFromCart(item.id);
+            });
+
+            list.appendChild(div);
+        });
+    }
+
+    updateSummary();
+    updateTabs();
+}
+
+function changeQuantity(productId, delta) {
+    const cart = carts[activeCartStore];
+    const item = cart.find(product => String(product.id) === String(productId));
+
+    if (!item) return;
+
+    item.quantity += delta;
+
+    if (item.quantity <= 0) {
+        carts[activeCartStore] = cart.filter(product => String(product.id) !== String(productId));
+    }
+
+    saveCarts();
+    renderCart();
+}
+
+function removeFromCart(productId) {
+    carts[activeCartStore] = carts[activeCartStore].filter(
+        product => String(product.id) !== String(productId)
+    );
+
+    saveCarts();
+    renderCart();
+}
+
+function clearCurrentCart() {
+    carts[activeCartStore] = [];
+    saveCarts();
+    renderCart();
+}
+
+function updateSummary() {
+    const cart = carts[activeCartStore] || [];
+
+    const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+    document.getElementById('cartCount').textContent = count;
+    document.getElementById('cartTotal').textContent = `$${total.toLocaleString('es-CL')}`;
+
+    const liderTotal = getTotal('Lider Real');
+    const jumboTotal = getTotal('Jumbo Real');
+
+    document.getElementById('total-Lider').textContent = `$${liderTotal.toLocaleString('es-CL')}`;
+    document.getElementById('total-Jumbo').textContent = `$${jumboTotal.toLocaleString('es-CL')}`;
+
+    const totals = [
+        ['Lider', liderTotal],
+        ['Jumbo', jumboTotal]
+    ].filter(item => item[1] > 0);
+
+    if (totals.length === 0) {
+        document.getElementById('cheapestStore').textContent = '---';
+        return;
+    }
+
+    totals.sort((a, b) => a[1] - b[1]);
+
+    document.getElementById('cheapestStore').textContent =
+        `${totals[0][0]} ($${totals[0][1].toLocaleString('es-CL')})`;
+}
+
+function getTotal(store) {
+    return (carts[store] || []).reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+    );
+}
+
+function showCart(store) {
+    activeCartStore = store;
+    renderCart();
+}
+
+function changeStore() {
+    selectedStore = document.getElementById('storeSelect').value;
+    activeCartStore = selectedStore;
+    renderProducts();
+    renderCart();
+}
+
+function updateTabs() {
+    document.getElementById('tab-Lider').classList.toggle('active', activeCartStore === 'Lider Real');
+    document.getElementById('tab-Jumbo').classList.toggle('active', activeCartStore === 'Jumbo Real');
+}
+
+function filterProducts() {
+    const query = document.getElementById('searchInput').value;
+
+    clearTimeout(debounceTimer);
+
+    debounceTimer = setTimeout(() => {
+        loadProducts(query);
+    }, 800);
+}
+
+function buscarAhora() {
+    const query = document.getElementById('searchInput').value;
+    loadProducts(query);
+}
+
+function saveCarts() {
+    localStorage.setItem('jumboLiderCarts', JSON.stringify(carts));
+}
+
+function loadCarts() {
+    const saved = localStorage.getItem('jumboLiderCarts');
+
+    if (!saved) return;
+
+    try {
+        const parsed = JSON.parse(saved);
+
+        carts = {
+            "Lider Real": Array.isArray(parsed["Lider Real"]) ? parsed["Lider Real"] : [],
+            "Jumbo Real": Array.isArray(parsed["Jumbo Real"]) ? parsed["Jumbo Real"] : []
+        };
+    } catch (error) {
+        carts = {
+            "Lider Real": [],
+            "Jumbo Real": []
+        };
+    }
+}
+
+function storeShort(store) {
+    if (store === 'Lider Real') return 'Lider';
+    if (store === 'Jumbo Real') return 'Jumbo';
+    return store;
+}
+
+function escapeHtml(text) {
+    return String(text || '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+}
+
+function escapeAttribute(text) {
+    return escapeHtml(text).replaceAll('`', '&#096;');
+}
 </script>
 
 </body>
