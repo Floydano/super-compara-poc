@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: super-compara-frontend
+  namespace: super-compara
+  labels:
+    app: super-compara-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: super-compara-frontend
+  template:
+    metadata:
+      labels:
+        app: super-compara-frontend
+    spec:
+      containers:
+      - name: frontend
+        image: ghcr.io/Floydano/super-compara-poc-frontend:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: BACKEND_URL
+          value: "http://super-compara-backend:3000"

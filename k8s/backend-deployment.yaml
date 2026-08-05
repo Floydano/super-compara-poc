@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: super-compara-backend
+  namespace: super-compara
+  labels:
+    app: super-compara-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: super-compara-backend
+  template:
+    metadata:
+      labels:
+        app: super-compara-backend
+    spec:
+      containers:
+      - name: backend
+        image: ghcr.io/Floydano/super-compara-poc-backend:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "3000"

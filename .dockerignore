@@ -1,0 +1,10 @@
+# Common dockerignore to keep images small
+node_modules
+npm-debug.log
+.DS_Store
+.git
+.gitignore
+.env
+build
+dist
+coverage
