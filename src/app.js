@@ -408,3 +408,9 @@ function escapeHtml(text) {
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#039;');
 }
+
+export function computeTotal(cartsObj, store) {
+  return (cartsObj[store] || []).reduce((sum, item) => sum + (Number(item.price) || 0) * (Number(item.quantity) || 0), 0);
+}
+
+export { formatPrice, escapeHtml, storeShort };
